@@ -1,76 +1,73 @@
-import React from 'react';
-import {
-  Avatar,
-  Flex,
-  Text,
-  VStack,
-  HStack,
-  Center,Box,Spacer,Badge,Image,Icon
-
-} from '@chakra-ui/react'
-import { RiUserFollowFill,RiUserUnfollowFill } from "react-icons/ri";
-import { MDBBadge } from 'mdb-react-ui-kit';
-import { RiUserFollowLine } from "react-icons/ri";
-import { SlUserFollow } from "react-icons/sl";
-import { RxCross2 } from "react-icons/rx";
+import React, { useContext, useState, useEffect } from "react";
+import NotifyComp from "../../Notification/NotifyComp";
+import axios from 'axios';
+import {useSelector} from "react-redux";
+import { Box } from "@chakra-ui/react";
 
 
-export default function ThirdSection() {
-  return (
+const baseURL = "http://127.0.0.1:8001";
+const ThirdSection = () => {
 
-<>
-    <Flex bg={'rgb(31, 33, 33)'} padding={'3%'} borderRadius={'7px'} margin={'2%'}>
-   <HStack>
-     <Avatar  size='sm' name='Kent Dodds' src='https://bit.ly/kent-c-dodds' />
-     <Box  >
-<Text style={{paddingTop:'12%'}} fontSize={'12px'}>Bibin Liked your post.</Text></Box>
-   </HStack >  <Spacer />  
-   <Box paddingTop={'4%'}>
-   <Spacer />  
-   {/* <MDBBadge  pill className='me-2 text-dark' color='light' light>mark as read</MDBBadge> */}
-   </Box>
-   <Image
-    boxSize='50px'
-    objectFit='cover'
-    src='https://bit.ly/dan-abramov'
-    alt='Dan Abramov'
-  />
-   </Flex>
-
-   <Flex bg={'rgb(31, 33, 33)'} padding={'3%'} borderRadius={'7px'} margin={'2%'} fontSize={'12px'}>
-   <HStack>
-     <Avatar  size='sm' name='Kent Dodds' src='https://bit.ly/kent-c-dodds' />
-     <Box  >
-<Text style={{paddingTop:'12%'}} >Albert followed you</Text></Box>
-   </HStack >  <Spacer />  
-   <HStack paddingTop={'4%'}>
-   <Icon as={SlUserFollow} fontSize={'20px'}  />
-
-   <Icon as={RxCross2} fontSize={'25px'}  />
-   
-   </HStack>
-
-    <Spacer />
-   </Flex>
-   <Flex bg={'rgb(31, 33, 33)'} padding={'3%'} borderRadius={'7px'} margin={'2%'} fontSize={'12px'}>
-   <HStack>
-     <Avatar  size='sm' name='Kent Dodds' src='https://bit.ly/kent-c-dodds' />
-     <Box  >
-<Text style={{paddingTop:'12%'}}  >Bibin Commented on your post: 'Hi bro'</Text></Box>
-   </HStack >  <Spacer />  
-   <Box paddingTop={'4%'}>
-   <Spacer />  
-   {/* <MDBBadge  pill className='me-2 text-dark' color='light' light>mark as read</MDBBadge> */}
-   </Box>
-   <Image
-    boxSize='50px'
-    objectFit='cover'
-    src='https://bit.ly/dan-abramov'
-    alt='Dan Abramov'
-  />
-   </Flex>
+  const authentication_user = useSelector((state) => state.authentication_user);
+  const [notes, setNotes] = useState([]);
 
 
-   </>
-  );
+
+
+  const GetNotifications = async ()=>{
+console.log('calledd')
+    try {
+        const userId = authentication_user.name; 
+const res = await axios.get(baseURL + '/api/home/notifylist/', {
+  params: { user_id: userId },
+});
+  
+        if (res.status === 200) {
+          const parsedData = JSON.parse(res.data)
+        
+// console.log('gggggggg',parsedData)
+          setNotes(parsedData);  
+        } 
+      } catch (error) {
+        console.error('Error fetching comments:', error);
+      }
+
 }
+useEffect(() => { 
+              
+    GetNotifications() 
+    
+     
+}, []);
+
+
+
+return (
+  <Box   marginBottom={'4'}  overflow="auto"  sx={{
+    '&::-webkit-scrollbar': {
+      width: '5px', 
+    },
+    '&::-webkit-scrollbar-thumb': {
+      backgroundColor: 'transparent',
+    },
+  }} maxHeight="825px"
+  padding={'1%'}   >
+    {/* {!notes ? (
+      <p>Loading...</p>
+    ) : ( */}
+     { notes.map((data) => (
+        <NotifyComp
+          key={data._id} 
+          user={data.user}
+          notification_type={data.notification_type}
+          post_id={data.post_id} 
+          by_user={data.by_user}
+        />
+      ))}
+    {/* )} */}
+  </Box>
+);
+
+};
+
+export default ThirdSection;

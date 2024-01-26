@@ -18,6 +18,7 @@ from .serializers import (
     ReportCommentSerializer,
     ReportPostSerializer,
     NotificationSerializer,
+     CustomJSONEncoder
 )
 from bson import ObjectId
 import json
@@ -428,12 +429,13 @@ class PostRemove(APIView):
 
 class NotificationsList(APIView):
     def get(self, request):
-        user_id = request.GET.get("user_id", None)
-        data = list(Notification.find({"user_name": user_id}))
+        user_id = request.query_params.get("user_id", None)
+        data = list(Notification.find({"user": user_id}))
         print(user_id)
-        serializer = NotificationSerializer(data, many=True)
+        serializer = json.dumps(data, default=str)
+        
         if serializer:
-            return Response(data=serializer.data, status=status.HTTP_200_OK)
+            return Response(data=serializer, status=status.HTTP_200_OK,content_type="application/json")
         else:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
@@ -536,6 +538,6 @@ class ReplyCommentListing(APIView):
         replyed_comments = list(ReplyComments.find({'comment_id': comment_id}))
         serializer = ReplyCommentSerializer(replyed_comments, many=True)
         if serializer.data:
-            return Response(data=serializer.data, status=status.HTTP_200_OK)
+            return Response(data=serializer.data, status=status.HTTP_200_OK )
         else:
             return Response(status=status.HTTP_404_NOT_FOUND)

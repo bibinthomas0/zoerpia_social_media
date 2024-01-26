@@ -131,16 +131,16 @@ const Navbar = () => {
             </Box>
           </HStack>
           <Spacer />
-          {/* <MDBDropdown className="shadow-0">
+          <MDBDropdown className="shadow-0">
             <MDBDropdownToggle color="dark">
-              {" "}
-              <TbRobot />{" "}
+       
+              <TbRobot />
             </MDBDropdownToggle>
 
             <MDBDropdownMenu style={{ backgroundColor: "black" }}>
               <VirtualFriend />
             </MDBDropdownMenu>
-          </MDBDropdown> */}
+          </MDBDropdown>
           <Spacer />
           <Box style={{ marginLeft: "2%" }}>
             <HStack>

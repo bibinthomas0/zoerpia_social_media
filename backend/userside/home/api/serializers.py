@@ -64,6 +64,21 @@ class ReportPostSerializer(serializers.Serializer):
     verified = serializers.BooleanField()
     
 class NotificationSerializer(serializers.Serializer):
-    _id = serializers.CharField()
-    user_name = serializers.CharField()
-    message = serializers.CharField() 
+    class Meta:
+        model = Notification 
+        fields = "__all__"
+    # _id = serializers.CharField()
+    # user = serializers.CharField()
+    # message = serializers.CharField() 
+    # by_user = serializers.CharField()
+    # post_id = serializers.CharField()
+    # notification_type = serializers.CharField()
+    
+import json
+from bson import ObjectId
+
+class CustomJSONEncoder(json.JSONEncoder):
+    def default(self, o):
+        if isinstance(o, ObjectId):
+            return str(o)
+        return super().default(o)

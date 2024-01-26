@@ -45,10 +45,6 @@ const NotifiBar = () => {
 
 const GetNotifications = async ()=>{
 
- 
-
-
-
         try {
             const userId = authentication_user.name; 
     const res = await axios.get(baseURL + '/api/home/notifylist/', {
