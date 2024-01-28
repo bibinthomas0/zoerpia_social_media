@@ -9,7 +9,6 @@ import { Heading } from "@chakra-ui/react";
 import { useSelector } from "react-redux";
 import axios from 'axios';
 import NotifyComp from "../Notification/NotifyComp";
-import { useNotification } from "../../Context/WebSocketService";
 
 
 const baseURL = "http://127.0.0.1:8001";
@@ -20,27 +19,10 @@ const NotifiBar = () => {
     const authentication_user = useSelector((state) => state.authentication_user);
     const [notes,setNotes] = useState([])
     const [notifications, setNotifications] = useState([]);
-    const { socket, Notification } = useNotification();
 
 
 
 
-    useEffect(() => {
-
-      const getSocketNotification = () => {
-        if (socket) {
-          socket.onmessage = (event) => {
-            const data = JSON.parse(event.data);
-            console.log(data);
-            setNotes((prevnotifications) => [...prevnotifications, data]);
-          };
-        }
-      };
-      
-      getSocketNotification();
-     
-  
-    }, [socket]);
 
 
 const GetNotifications = async ()=>{

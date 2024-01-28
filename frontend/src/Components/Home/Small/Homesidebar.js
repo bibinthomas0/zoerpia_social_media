@@ -3,7 +3,7 @@ import { HStack,Text,Icon,useBreakpointValue,Box, Center } from "@chakra-ui/reac
 import { useNavigate } from "react-router-dom";
 
 function Homesidebar(props) {
-  const responsiveTitle = useBreakpointValue({ base: null, xl: props.title, md:props.title });
+  const responsiveTitle = useBreakpointValue({ base: null, xl: props.title,lg:props.title });
   const navigate = useNavigate()
     return (
 
@@ -22,7 +22,7 @@ function Homesidebar(props) {
       onClick={()=>navigate(props.navigation)}
 
     >
- <Center>
+ <Center> 
     { props.icon ?  <Icon
         color="gray.500"
         as={props.icon}

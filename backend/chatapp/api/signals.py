@@ -6,7 +6,7 @@ from asgiref.sync import async_to_sync
 from .models import Notifications,NotificationRoom
 
 @receiver(pre_save, sender=Notifications)
-def notification_created(sender, instance,**kwargs):
+def message_created(sender, instance,**kwargs):
     print('notification_created signal handler is called.')
     # if instance:
     #     room = NotificationRoom.objects.get(user__username=instance.user)

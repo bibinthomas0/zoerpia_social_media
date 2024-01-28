@@ -102,6 +102,23 @@ export default function ChatPage() {
     }
   };
 
+  const seenMessage = async () => {
+    try {
+      var data = { username: authentication_user.name };
+      const res = await axios.get(baseURL + "/api/chat/getuser/", {
+        params: data,
+      });
+
+      if (res.status === 202) {
+        setUserId(res.data.id);
+      }
+    } catch (error) {
+      console.error("Error fetching comments:", error);
+    }
+  };
+
+
+
   useEffect(() => {
     console.log(selectedChat);
     GetRoom();

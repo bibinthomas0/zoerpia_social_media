@@ -40,7 +40,7 @@ function Secondsection() {
     '&::-webkit-scrollbar-thumb': {
       backgroundColor: 'transparent',
     },
-  }} maxHeight="825px"
+  }} maxHeight="100vh"
   padding={'1%'}
   >
 

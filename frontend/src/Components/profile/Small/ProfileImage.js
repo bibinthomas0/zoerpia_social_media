@@ -66,6 +66,7 @@ const ProfileImage = () => {
     setProfileImageUrl("");
     setShowUrl("");
     setContent("");
+    console.log('ffffffffffffffffff');
   };
   useEffect(() => {
     if (!isOpen) {
@@ -164,7 +165,7 @@ const GetCoverImage = async ()=>{
     GetCoverImage() 
   GetProfileImage()
 
-  }, [isOpen,ProfileImage,]);
+  }, [isOpen,ProfileImage]);
   
 
   return (

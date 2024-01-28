@@ -14,14 +14,14 @@ import PrivateRoute from "../Auth/PrivateRoute";
 import ForgotPassword from "../Auth/ForgotPassword";
 import { useLocation } from "react-router-dom";
 import ProfilePage from "../Profile/ProfilePage";
-import Chat from "../../Chat/Chat";
+
 import ChatList from "../../Chat/ChatList";
 import FPprofile from "../../../Components/FriendProfile/small/FPprofile";
 import Friendprofile from "../firendsProfile/Friendprofile";
 import ChatSelect from "../../../Context/ChatSelectContext";
 import VirtualFriend from "../../Chat/ai/VirtualFriend";
 import UserSettings from "../Settings/UserSettings";
-import { NotificationProvider } from "../../../Context/WebSocketService";
+// import { NotificationProvider } from "../../../Context/WebSocketService";
 import PhotosMain from "../../Photos/PhotosMain";
 
 function UserWrapper() {
@@ -67,7 +67,6 @@ function UserWrapper() {
         <Navbar />
       )}
       <ChatSelect>
-        <NotificationProvider>
           <Routes>
             <Route path="login" element={<Login />} />
             <Route path="register" element={<Register />} />
@@ -98,11 +97,9 @@ function UserWrapper() {
             />
             <Route path="user/:username" element={<Friendprofile />} />
             <Route path="photos" element={<PhotosMain/>} /> 
-            <Route path="chat" element={<Chat />} />
             <Route path="chatlist" element={<ChatList />} />
             <Route path="/settings" element={<UserSettings />} />
           </Routes>
-        </NotificationProvider>
       </ChatSelect>
     </>
   );

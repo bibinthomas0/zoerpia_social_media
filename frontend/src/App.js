@@ -17,14 +17,16 @@ function App() {
       <BrowserRouter>
 
       <Provider store={store}>
-      <NotificationProvider>
         <PersistGate loading={null} persistor={persistor}>
+      <NotificationProvider>
+
       <Routes>
         <Route path="*" element={<UserWrapper/>}/>
         <Route path="admincontrol/*" element={<AdminWrapper/>}/>
       </Routes>
-      </PersistGate>
       </NotificationProvider>
+
+      </PersistGate>
       </Provider>
 
       </BrowserRouter>

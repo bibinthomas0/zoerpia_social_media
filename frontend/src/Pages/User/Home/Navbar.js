@@ -40,30 +40,16 @@ import {
   MDBDropdownToggle,
   MDBDropdownItem,
 } from "mdb-react-ui-kit";
-import { useNotification } from "../../../Context/WebSocketService";
 import NotStacked from "../../../Components/Notification/NotStacked";
 
 const REACT_APP_CLOUDINARY_CLOUD_NAME = "dvlpq6zex";
 const baseURL = "http://127.0.0.1:8001";
 const Navbar = () => {
-  const { socket, Notification } = useNotification();
   const [notifi, setNotifi] = useState([]);
   const authentication_user = useSelector((state) => state.authentication_user);
   const [profileimage1, setProfileImage1] = useState("");
 
-  useEffect(() => {
-    const getSocketNotification = () => {
-      if (socket) {
-        socket.onmessage = (event) => {
-          const data = JSON.parse(event.data);
-          console.log('mmmmmmmmmmmmmmmm',data);
-          setNotifi((noti) => [...noti, data]);
-        };
-      }
-    };
 
-    getSocketNotification();
-  }, [socket]);
 
   useEffect(() => {
     console.log('Updated notifications:', notifi);

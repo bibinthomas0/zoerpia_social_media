@@ -19,15 +19,15 @@ export const NotificationProvider = ({ children })=> {
   const [socket, setSocket] = useState(null);
   const [userId,setUserId] = useState("")
   const [Notification, setNotification] = useState("");
- 
+  const [unread_msg,setUnread_msg] = useState([])
 
 
   const SocketManagement = () => {
     if (authentication_user.name) {
-      if (socket) {
-        socket.close();
-        console.log("Previous WebSocket disconnected");
-      }
+      // if (socket) {
+      //   socket.close();
+      //   console.log("Previous WebSocket disconnected");
+      // }
       const newSocket = new ReconnectingWebSocket(
         `ws://localhost:8002/ws/notify/${authentication_user.name}/`
       );
@@ -47,8 +47,20 @@ export const NotificationProvider = ({ children })=> {
   useEffect(() => {
     SocketManagement();
   }, []);
-
-
+  
+  // useEffect(() => {
+  //   if (socket) {
+  //     socket.onmessage = (event) => {
+  //       const data = JSON.parse(event.data);
+  //       if (data.unread_messages) {
+  //         console.log(data.unread_messages);
+  //       } else if (data.notification){
+  //         console.log(data.notification)
+          
+  //       }
+  //     };
+  //   }
+  // }, [socket]);
 
 
 
@@ -59,9 +71,10 @@ export const NotificationProvider = ({ children })=> {
 <NotificationContext.Provider
       value={{
         socket,
-    
         Notification,
-
+        unread_msg,
+        setUnread_msg,
+        setNotification
        
       }}
     >

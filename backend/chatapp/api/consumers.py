@@ -5,6 +5,8 @@ from channels.db import database_sync_to_async
 from .models import Message, Room, User, NotificationRoom
 import random
 import string
+from django.db.models import Count
+from .serializers import MessageSerializer
 
 
 class ChatConsumer(AsyncWebsocketConsumer):
@@ -28,24 +30,23 @@ class ChatConsumer(AsyncWebsocketConsumer):
         self.room = await self.get_or_create_room()
         self.user = await self.get_or_create_user()
 
-        # Join room group
         await self.channel_layer.group_add(self.room_group_name, self.channel_name)
         await self.accept()
         await self.create_online_user(self.user)
         await self.send_user_list()
+        await self.seen_messages()
 
     async def disconnect(self, close_code):
         await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
-        # await self.remove_online_user(self.user)
         await self.send_user_list()
 
     async def receive(self, text_data=None, bytes_data=None):
         data = json.loads(text_data)
-        message = data.get("message")  # Use get to avoid KeyError
+        message = data.get("message")
         m_type = data.get("m_type")
         if not message or len(message) > 555:
             return
-
+        await self.seen_messages()
         message_obj = await self.create_message(message, m_type)
         print(message_obj.m_type, "jjjjjjjjjjjjjjjj")
         if message_obj:
@@ -118,8 +119,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
         try:
             self.room.userslist.add(user.id)
             self.room.save()
-            self.user.is_online = True
-            self.user.save()
         except Exception as e:
             print("Error joining user to room:", str(e))
             return None
@@ -129,8 +128,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
         try:
             self.room.userslist.remove(user)
             self.room.save()
-            self.user.is_online = False
-            self.user.save()
         except Exception as e:
             print("Error removing user to room:", str(e))
             return None
@@ -138,6 +135,13 @@ class ChatConsumer(AsyncWebsocketConsumer):
     @database_sync_to_async
     def get_connected_users(self):
         return [user.username for user in self.room.userslist.all()]
+
+    @database_sync_to_async
+    def seen_messages(self):
+        un_read = Message.objects.filter(room=self.room).exclude(user=self.user)
+        for obj in un_read:
+            obj.seen = True
+            obj.save()
 
 
 class NotificationConsumer(AsyncWebsocketConsumer):
@@ -160,24 +164,32 @@ class NotificationConsumer(AsyncWebsocketConsumer):
         await self.channel_layer.group_add(self.room_group_name, self.channel_name)
         await self.accept()
         await self.create_online_user()
+        await self.get_unread_messages()
 
     async def disconnect(self, close_code):
         await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
         await self.remove_online_user()
 
     async def send_notification(self, event):
+        print("sended")
         await self.send(
-            text_data=json.dumps(
-                {
-                    "user": event["user"],
-                    "notification_type": event["notification_type"],
-                    "post_id": event["post_id"],
-                    "by_user": event["by_user"],
-                    'seen':event['seen'],
-                    'id':event['id']
-                }
-            )
+            text_data=json.dumps({"type": "notification", "user": event["user"]})
         )
+
+    async def get_unread_messages(self):
+        data = await self.unread_messages()
+        await self.channel_layer.group_send(
+            self.room_group_name,
+            {
+                "type": "send_unread_messages", 
+                "un_read": data,
+            },
+        )
+        print("sended")
+
+    async def send_unread_messages(self, event):
+        unread = event["un_read"]
+        await self.send(text_data=json.dumps({"type":"unread_messages","unread_messages": unread}))
 
     def generate_mixed_string(self, length=10):
         characters = string.digits + string.ascii_letters
@@ -211,3 +223,20 @@ class NotificationConsumer(AsyncWebsocketConsumer):
     def remove_online_user(self):
         self.user.is_online = False
         self.user.save()
+
+    @database_sync_to_async
+    def unread_messages(self, *args, **kwarg):
+        unread = Message.objects.filter(user=self.user).exclude(seen=True)
+        unread_messages_list = [
+            {
+                "id": msg.id,
+                "content": msg.content,
+                "timestamp": str(msg.timestamp),
+                "room": msg.room_id,
+                "user": msg.user_id,
+                "seen": msg.seen,
+                "m_type": msg.m_type,
+            }
+            for msg in unread
+        ]
+        return unread_messages_list

@@ -121,22 +121,33 @@ class PostLikeView(APIView):
         else:
             userr = kk["user"]
             if userr != liked_by:
-                data = Notification.insert_one(
-                {"by_user": liked_by, "post_id": liked_post_oid, "notification_type": "like",'user':userr}
-            )
+                date = datetime.now()
+                data = {"by_user": liked_by, "post_id": liked_post_oid, "notification_type": "like", 'user': userr, 'created_at': date}
+                Notification.insert_one(data)
                 publish(
-                    method="like_added",
-                    body={"by_user": liked_by, "post_id": liked_post, "notification_type": "like",'user':userr},
+                    method="like",
+                    body={'user':userr},
                 )
             return Response(status.HTTP_202_ACCEPTED)
 
 
 class CommentCreate(APIView):
     def post(self, request):
-        request.data["created_at"] = datetime.now()
-        d = Comments.insert_one(request.data)
+        date = datetime.now()
+        request.data["created_at"] = date
+        Comments.insert_one(request.data)
+        d = Comments.find_one(request.data)
+        post_id = ObjectId(request.data["post_id"])
+        post = post_collection.find_one({"_id": post_id})
+        print(d['_id'])
+        data = {"by_user": request.data['user_name'],'comment':d['_id'], "post_id": str(post_id), "notification_type": "comment", 'user': post['user'], 'created_at': date,'seen':False}
+        Notification.insert_one(data)
+        print(data)
+        publish(
+                    method="comment",
+                    body={"user":post['user']}
+                )
         return Response(status.HTTP_201_CREATED)
-
 
 class CommentList(APIView):
     def get(self, request):
@@ -194,7 +205,12 @@ class FollowManagementApi(APIView):
                     Follow.insert_one({"user": followed_user})
                 if not s_userr:
                     Follow.insert_one({"user": following_user})
-
+                data = {'user':followed_user,'by_user':following_user,'created_at':datetime.now(),'notification_type':"follow"}
+                Notification.insert_one(data)
+                publish(
+                    method="comment",
+                    body={"user":followed_user}
+                )
             Follow.find_one_and_update({"user": followed_user}, Followers_update_query)
             Follow.find_one_and_update({"user": following_user}, following_update_query)
             print("done")
@@ -300,6 +316,7 @@ class ReportedCommentsListing(APIView):
             return Response(data=serializer.data, status=200)
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
+
 
 
 class CommentRetrieve(APIView):
@@ -430,7 +447,7 @@ class PostRemove(APIView):
 class NotificationsList(APIView):
     def get(self, request):
         user_id = request.query_params.get("user_id", None)
-        data = list(Notification.find({"user": user_id}))
+        data = list(Notification.find({"user": user_id}).sort("created_at", -1))
         print(user_id)
         serializer = json.dumps(data, default=str)
         
