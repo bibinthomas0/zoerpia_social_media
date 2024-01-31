@@ -33,7 +33,7 @@ class Message(models.Model):
 
 class NotificationRoom(models.Model):
     name = models.CharField(max_length=40)
-    user = models.ForeignKey(to=User,on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, unique=True)
 
 
    

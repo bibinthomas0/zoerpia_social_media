@@ -107,8 +107,9 @@ class GetUser(APIView):
 
 
 class GetLastMessage(APIView):
+    print('jj')
     def get(self,request):
-        room_id = request.query_params.get("roomid")
+        room_id = request.data.get("roomid")
         print(room_id)
         try:
             last_message = Message.objects.filter(room=room_id).order_by("timestamp")[:1]

@@ -58,7 +58,7 @@ useEffect(()=>{
         if(selectedChat!==newChat){
           SetNewChat("")
         }
-        console.log('fffffffffffffffff');
+        console.log('fffffffffffffffff',res.data);
       } else {
         console.log("Error on postlist");
       }

@@ -11,6 +11,7 @@ import { SlUserFollow } from "react-icons/sl";
 import { RxCross2 } from "react-icons/rx";
 import axios from "axios";
 import { SlUserUnfollow } from "react-icons/sl";
+import { formatDistance } from 'date-fns'
 
 const REACT_APP_CLOUDINARY_CLOUD_NAME = "dvlpq6zex";
 const baseURL = "http://127.0.0.1:8001";
@@ -21,7 +22,7 @@ export default function NotifyComp(props) {
   const [profileimage,setProfileImage]= useState("")
   const [comment,setComment] = useState("")
   const [follow, SetFollow] = useState(false);
-
+  const [time,setTime] = useState("")
 
   const fetchfollow = async () => {
     var data = { user: props.user, author: props.by_user };
@@ -37,6 +38,25 @@ export default function NotifyComp(props) {
     fetchfollow();
   }, [props]);
 
+
+  useEffect(() => {
+    getTime()
+
+    }, [props]);
+
+  const getTime = () =>{
+    let currentdate = new Date();
+    let indian_date = new Date().toLocaleString("en-Us", {timeZone: 'Asia/Kolkata'});
+    let m_date = props.time.toLocaleString("en-Us", {timeZone: 'Asia/Kolkata'})
+ 
+    var result = formatDistance(
+        new Date(props.time), 
+        new Date(indian_date),
+        { includeSeconds: true }
+      )
+      console.log(result)
+      setTime(result)
+}
   const followManagement = async () => {
     var data = {
       following_user: props.user,
@@ -151,6 +171,7 @@ useEffect(() => {
             <Text style={{ paddingTop: '12%' }} fontSize={'12px'}>
               {`${props.by_user} Liked your post`}.
             </Text>
+            <Text fontSize={'8px'}>{time}</Text>
           </Box>
         </HStack>
         <Spacer />
@@ -159,6 +180,7 @@ useEffect(() => {
           {/* <MDBBadge  pill className='me-2 text-dark' color='light' light>mark as read</MDBBadge> */}
         </Box>
         <Image overflow={'hidden'} boxSize='50px' objectFit='cover' src={`https://res.cloudinary.com/${REACT_APP_CLOUDINARY_CLOUD_NAME}/${postImage}`} alt='Dan Abramov' />
+        
       </Flex>
     ) : props.notification_type === 'follow' ? (
       <Flex bg={'rgb(31, 33, 33)'} padding={'3%'} borderRadius={'7px'} margin={'2%'} fontSize={'12px'}>

@@ -8,7 +8,7 @@ import {
   MDBIcon,
   MDBFile,
 } from "mdb-react-ui-kit";
-import { Box } from "@chakra-ui/react";
+import { Box, Text } from "@chakra-ui/react";
 import { useSelector } from "react-redux";
 import axios from "axios";
 import { ChatSelectContext } from "../../Context/ChatSelectContext";
@@ -16,6 +16,10 @@ import webSocketService from "../../Context/WebSocketService";
 import Message from "./small/Message";
 import PulseCards from "../Home/Main/SkeltonHome";
 import ReconnectingWebSocket from "reconnecting-websocket";
+import { useNotification } from "../../Context/WebSocketService";
+import { Spinner } from '@chakra-ui/react'
+
+
 
 const baseURL = "http://127.0.0.1:8002";
 const REACT_APP_CLOUDINARY_CLOUD_NAME = "dvlpq6zex";
@@ -37,7 +41,7 @@ export default function ChatPage() {
   const [selectedImage, setSelectedImage] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const [loading, setloading] = useState(false);
-
+  const { SocketManagement } = useNotification();
   useEffect(() => {
     uploadImage();
   }, [selectedImage]);
@@ -140,7 +144,7 @@ export default function ChatPage() {
     }
   };
 
-  const SocketManagement = () => {
+  const SocketManagementt = () => {
     if (authentication_user.name && room) {
       if (socket) {
         socket.close();
@@ -150,7 +154,8 @@ export default function ChatPage() {
         `ws://localhost:8002/ws/chat/${room}/${authentication_user.name}/`
       );
       setSocket(newSocket);
-      newSocket.onopen = () => console.log("WebSocket connected");
+      newSocket.onopen = () =>{ 
+        console.log("WebSocket connected");}
       newSocket.onclose = () => {
         console.log("WebSocket disconnected");
       };
@@ -161,6 +166,8 @@ export default function ChatPage() {
   };
 
   useEffect(() => {
+    SocketManagement()
+    
     getSocketMessage();
   }, [socket]);
 
@@ -216,7 +223,7 @@ export default function ChatPage() {
     }
   };
   useEffect(() => {
-    SocketManagement();
+    SocketManagementt();
   }, [room]);
 
   useEffect(() => {
@@ -318,15 +325,15 @@ export default function ChatPage() {
                       })
                     : ""}
                 </div>
-
-                <div
+{selectedChat ?
+            (    <div
                   className="text-muted d-flex justify-content-start align-items-center pe-3 pt-3 mt-2"
-                  style={{ bottom: 0, position: "absolute" }}
+                  style={{ bottom: 0, position: "absolute",backgroundColor:"black", marginBottom:"10px" }}
                 >
                   <img
-                    src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava6-bg.webp"
+                    src={`https://res.cloudinary.com/${REACT_APP_CLOUDINARY_CLOUD_NAME}/${senderimage}`}
                     alt="avatar 3"
-                    style={{ width: "40px", height: "100%" }}
+                    style={{ height: "50px",borderRadius:"50%",marginRight:"5px" }}
                   />
                   <input
                     type="text"
@@ -334,11 +341,12 @@ export default function ChatPage() {
                     id="exampleFormControlInput2"
                     placeholder="Type message"
                     value={message}
+                    style={{width:"80%"}}
                     onChange={(event) => setMessage(event.target.value)}
                   />
 
                   {loading ? (
-                    <p>loading</p>
+                    <Spinner color='red.500' />
                   ) : (
                     <div>
                       <label
@@ -364,7 +372,7 @@ export default function ChatPage() {
                   <a className="ms-3" href="#!">
                     <MDBIcon fas icon="paper-plane" onClick={handleSubmit} />
                   </a>
-                </div>
+                </div> )  :(<Text color={'white'}>Select any chat to countinue....</Text>)       }
               </MDBRow>
             </MDBCardBody>
           </MDBCard>

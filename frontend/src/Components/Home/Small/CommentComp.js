@@ -203,6 +203,7 @@ setReply('')
               />
             </MenuButton>
             <MenuList bg={"black"}>
+              {authentication_user.name !== props.comm.user_name && 
               <MenuItem
                 bg={"black"}
                 as="a"
@@ -215,7 +216,7 @@ setReply('')
                 }
               >
                 Report
-              </MenuItem>
+              </MenuItem>}
               {authentication_user.name === props.comm.user_name && (
                 <MenuItem
                   bg={"black"}

@@ -48,14 +48,12 @@ function OtpVerification() {
 
       useEffect(() => {
         setOtp(userRegDetails.otp) 
-      
-        return () => {
-        
-        };
-      }, [OtpVerification]);
+  
+      }, []);
       
       
       console.log("old",Otp)
+
       const HandleOtp = async () =>{
         if(Otp === userOtp){ 
           try {

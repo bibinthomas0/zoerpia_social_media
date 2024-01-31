@@ -116,10 +116,16 @@ class PostLikeView(APIView):
             update_query = {"$push": {"likes": liked_by}}
             PostLikeView.updateRecomendation(liked_post_oid, liked_by)
         kk = post_collection.find_one_and_update({"_id": liked_post_oid}, update_query)
+        userr = kk["user"]
         if post:
+            data = {"by_user": liked_by, "post_id": liked_post_oid, "notification_type": "like"}
+            Notification.delete_many(data)
+            publish(
+                    method="like",
+                    body={'user':userr},
+                )
             return Response(status.HTTP_205_RESET_CONTENT)
-        else:
-            userr = kk["user"]
+        else: 
             if userr != liked_by:
                 date = datetime.now()
                 data = {"by_user": liked_by, "post_id": liked_post_oid, "notification_type": "like", 'user': userr, 'created_at': date}
@@ -140,13 +146,14 @@ class CommentCreate(APIView):
         post_id = ObjectId(request.data["post_id"])
         post = post_collection.find_one({"_id": post_id})
         print(d['_id'])
-        data = {"by_user": request.data['user_name'],'comment':d['_id'], "post_id": str(post_id), "notification_type": "comment", 'user': post['user'], 'created_at': date,'seen':False}
-        Notification.insert_one(data)
-        print(data)
-        publish(
-                    method="comment",
-                    body={"user":post['user']}
-                )
+        if post['user'] != request.data['user_name']:
+            data = {"by_user": request.data['user_name'],'comment':d['_id'], "post_id": str(post_id), "notification_type": "comment", 'user': post['user'], 'created_at': date,'seen':False}
+            Notification.insert_one(data)
+            print(data)
+            publish(
+                        method="comment",
+                        body={"user":post['user']}
+                    )
         return Response(status.HTTP_201_CREATED)
 
 class CommentList(APIView):

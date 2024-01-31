@@ -7,7 +7,7 @@ import random
 import string
 from django.db.models import Count
 from .serializers import MessageSerializer
-
+from .signals import create_notification 
 
 class ChatConsumer(AsyncWebsocketConsumer):
     def __init__(self, *args, **kwargs):
@@ -35,6 +35,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
         await self.create_online_user(self.user)
         await self.send_user_list()
         await self.seen_messages()
+        # consumer_instance = NotificationConsumer()
+        # await consumer_instance.get_unread_messages()
 
     async def disconnect(self, close_code):
         await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
@@ -48,7 +50,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
             return
         await self.seen_messages()
         message_obj = await self.create_message(message, m_type)
-        print(message_obj.m_type, "jjjjjjjjjjjjjjjj")
         if message_obj:
             await self.channel_layer.group_send(
                 self.room_group_name,
@@ -96,9 +97,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
     def create_message(self, message, m_type):
         try:
             user_instance, _ = User.objects.get_or_create(username=self.user.username)
+            create_notification(user=self.user,room=self.room)
+            
             return Message.objects.create(
                 room=self.room, content=message, user=user_instance, m_type=m_type
             )
+            
         except Exception as e:
             print(f"Error creating message: {e}")
             return None
@@ -144,14 +148,18 @@ class ChatConsumer(AsyncWebsocketConsumer):
             obj.save()
 
 
+
+
+
 class NotificationConsumer(AsyncWebsocketConsumer):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.room_name = None
         self.room = None
-        self.user = None
+        self.user = None 
         self.room_group_name = None
-
+        self.data = None
+        self.rooms = None
     async def connect(self):
         print("Connecting...")
         self.userr = self.scope["url_route"]["kwargs"]["username"] or "Anonymous"
@@ -164,6 +172,7 @@ class NotificationConsumer(AsyncWebsocketConsumer):
         await self.channel_layer.group_add(self.room_group_name, self.channel_name)
         await self.accept()
         await self.create_online_user()
+
         await self.get_unread_messages()
 
     async def disconnect(self, close_code):
@@ -171,21 +180,26 @@ class NotificationConsumer(AsyncWebsocketConsumer):
         await self.remove_online_user()
 
     async def send_notification(self, event):
-        print("sended")
+      
         await self.send(
             text_data=json.dumps({"type": "notification", "user": event["user"]})
         )
+    async def send_chat_notification(self, event):
+      
+        await self.send(
+            text_data=json.dumps({"type": "chat_notification", "user": event["user"]})
+        )
 
     async def get_unread_messages(self):
-        data = await self.unread_messages()
+        self.rooms = await self.get_rooms()
+        self.data = await self.unread_messages()
         await self.channel_layer.group_send(
             self.room_group_name,
             {
                 "type": "send_unread_messages", 
-                "un_read": data,
+                "un_read": self.data,
             },
         )
-        print("sended")
 
     async def send_unread_messages(self, event):
         unread = event["un_read"]
@@ -225,18 +239,36 @@ class NotificationConsumer(AsyncWebsocketConsumer):
         self.user.save()
 
     @database_sync_to_async
-    def unread_messages(self, *args, **kwarg):
-        unread = Message.objects.filter(user=self.user).exclude(seen=True)
-        unread_messages_list = [
-            {
-                "id": msg.id,
-                "content": msg.content,
-                "timestamp": str(msg.timestamp),
-                "room": msg.room_id,
-                "user": msg.user_id,
-                "seen": msg.seen,
-                "m_type": msg.m_type,
-            }
-            for msg in unread
-        ]
-        return unread_messages_list
+    def get_rooms(self):
+        username = self.user
+        user = User.objects.get(username=username)
+        queryset = Room.objects.filter(userslist=user)
+
+        roomlist = list(queryset) 
+        return roomlist
+
+
+
+    @database_sync_to_async
+    def unread_messages(self):
+
+        unread_messages_dict = {}
+
+        for room in self.rooms:
+            unread = Message.objects.filter( room__id=room.id, seen=False).exclude(user=self.user)
+            unread_messages_list = [
+                {
+                    "id": msg.id,
+                    "content": msg.content,
+                    "timestamp": str(msg.timestamp),
+                    "room": msg.room_id,
+                    "user": msg.user_id,
+                    "seen": msg.seen,
+                    "m_type": msg.m_type,
+                } 
+                for msg in unread
+            ]
+            unread_messages_dict[room.name] = unread_messages_list
+
+        print('not calling')
+        return unread_messages_dict

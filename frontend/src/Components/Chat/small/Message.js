@@ -4,7 +4,7 @@ import{ useState, useEffect,useContext } from "react";
 import { useSelector } from "react-redux";
 import { formatDistance } from 'date-fns'
 import { MDBRipple } from 'mdb-react-ui-kit';
-
+import { useNotification } from "../../../Context/WebSocketService";
 
 const REACT_APP_CLOUDINARY_CLOUD_NAME = "dvlpq6zex";
 const baseURL = "http://127.0.0.1:8002";
@@ -12,6 +12,7 @@ const baseURL = "http://127.0.0.1:8002";
 
 const Message = (props) => {
     const authentication_user = useSelector((state) => state.authentication_user);
+    
     const [time,setTime] = useState("")
    
 useEffect(() => {
@@ -22,6 +23,7 @@ console.log(props.recieverimage)
 
 
 const getTime = () =>{
+
     let currentdate = new Date();
     let indian_date = new Date().toLocaleString("en-Us", {timeZone: 'Asia/Kolkata'});
     let m_date = props.time.toLocaleString("en-Us", {timeZone: 'Asia/Kolkata'})
@@ -31,6 +33,7 @@ const getTime = () =>{
         new Date(indian_date),
         { includeSeconds: true }
       )
+    
       setTime(result)
 }
   return (
@@ -54,6 +57,7 @@ const getTime = () =>{
         src={`https://res.cloudinary.com/${REACT_APP_CLOUDINARY_CLOUD_NAME}/${props.content}`}
         className='img-fluid rounded'
         alt='example'
+        style={{overflow:"hidden",maxHeight:"200px"}}
        
       />
     </MDBRipple>:props.content}
@@ -76,7 +80,8 @@ const getTime = () =>{
         src={`https://res.cloudinary.com/${REACT_APP_CLOUDINARY_CLOUD_NAME}/${props.content}`}
         className='img-fluid rounded'
         alt='example'
-    
+
+    style={{overflow:"hidden",maxHeight:"200px"}}
       />
     </MDBRipple>        </div>:  
     

@@ -359,7 +359,7 @@ const openComment = ()=>{
       <Center h={"50%"}>
         {props.image && (
           <Image
-            style={{ maxWidth: "60%" }}
+            style={{ maxWidth: "500px",overflow:"hidden" }}
             src={`https://res.cloudinary.com/${REACT_APP_CLOUDINARY_CLOUD_NAME}/${props.image}`}
             alt="Chakra UI"
           />

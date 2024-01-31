@@ -26,8 +26,10 @@ def callback(ch, method, properties, body):
             user = User.objects.create(username=username)
         print(user.id)
         try:
-            room = NotificationRoom.objects.get(user_id=user.id)
+            room = NotificationRoom.objects.get(user=user)
+            print(room.name)
         except:
+            print('hi')
             room = NotificationRoom.objects.create(user_id=user.id)   
         room_name = room.name
         print(room_name)

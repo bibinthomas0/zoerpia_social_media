@@ -20,7 +20,7 @@ export const NotificationProvider = ({ children })=> {
   const [userId,setUserId] = useState("")
   const [Notification, setNotification] = useState("");
   const [unread_msg,setUnread_msg] = useState([])
-
+  const [msg_accept,setMsg_accept] = useState(false)
 
   const SocketManagement = () => {
     if (authentication_user.name) {
@@ -48,34 +48,45 @@ export const NotificationProvider = ({ children })=> {
     SocketManagement();
   }, []);
   
-  // useEffect(() => {
-  //   if (socket) {
-  //     socket.onmessage = (event) => {
-  //       const data = JSON.parse(event.data);
-  //       if (data.unread_messages) {
-  //         console.log(data.unread_messages);
-  //       } else if (data.notification){
-  //         console.log(data.notification)
-          
-  //       }
-  //     };
-  //   }
-  // }, [socket]);
+  useEffect(() => {
+    if (socket) {
+      const handleMessage = (event) => {
+        const data = JSON.parse(event.data);
+        if (data.unread_messages) {
+          setUnread_msg(data.unread_messages)
 
+        } 
+        if(data){
+          console.log(data);
+          setNotification(data);
+        }
+        if(data.type === 'chat_notification'){
+          console.log('chat got')
+          setMsg_accept(true)
+        }
+      };
+  
+      socket.onmessage = handleMessage;
+  
 
-
-
-
+    }
+  }, [socket]);
+  useEffect(() => {
+if(msg_accept===true){
+  SocketManagement()
+}
+  }, [msg_accept]);
+  
 
   return (
 <NotificationContext.Provider
       value={{
         socket,
-        Notification,
         unread_msg,
-        setUnread_msg,
-        setNotification
-       
+        Notification,
+        msg_accept,
+
+        SocketManagement
       }}
     >
       {children}

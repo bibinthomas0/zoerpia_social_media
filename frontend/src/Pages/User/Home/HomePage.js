@@ -23,7 +23,7 @@ function HomePage() {
         <FirstSection />
       </Box>
 
-      <Box width={{ base: "89%", xl: "60%" }}  >
+      <Box width={{ base: "89%", xl: "60%" }} style={{paddingLeft:"0px"}}  >
         <Secondsection />
       </Box>
       <Box       width={{ base: 'none', xl: '20%' }}
