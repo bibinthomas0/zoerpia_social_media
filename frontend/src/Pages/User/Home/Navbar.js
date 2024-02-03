@@ -17,12 +17,7 @@ import {
   Icon,
   Center,
   Heading,
-  Button,
-  MenuList,
-  Collapse,
-  ScaleFade,
-  Fade,
-  Badge,
+
 } from "@chakra-ui/react";
 import { FaBell } from "react-icons/fa";
 import { MdChatBubble } from "react-icons/md";
@@ -41,6 +36,8 @@ import {
   MDBDropdownItem,
 } from "mdb-react-ui-kit";
 import NotStacked from "../../../Components/Notification/NotStacked";
+import { ImageSelectContext } from "../../../Context/DisplayImage";
+
 
 const REACT_APP_CLOUDINARY_CLOUD_NAME = "dvlpq6zex";
 const baseURL = "http://127.0.0.1:8001";
@@ -48,7 +45,7 @@ const Navbar = () => {
   const [notifi, setNotifi] = useState([]);
   const authentication_user = useSelector((state) => state.authentication_user);
   const [profileimage1, setProfileImage1] = useState("");
-
+  const {displayImage,setDisplayImage} = useContext(ImageSelectContext)
 
 
   useEffect(() => {
@@ -75,7 +72,8 @@ const Navbar = () => {
   };
   useEffect(() => {
     getprofileImage();
-  }, []);
+    console.log("image",displayImage)
+  }, [displayImage]);
 
   return (
     <>
@@ -167,7 +165,7 @@ const Navbar = () => {
                     <Avatar
                       size={{ base: "sm", xl: "md" }}
                       name=""
-                      src={`https://res.cloudinary.com/${REACT_APP_CLOUDINARY_CLOUD_NAME}/${profileimage1}`}
+                      src={`https://res.cloudinary.com/${REACT_APP_CLOUDINARY_CLOUD_NAME}/${displayImage ? displayImage :  profileimage1}`}
                       cursor="pointer"
                     />
                     <Text fontSize={{ base: "10", xl: "20" }}>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect,useContext } from "react";
 import { Flex, Box, Avatar, Text, Button } from "@chakra-ui/react";
 import { Image } from "@chakra-ui/react";
 import {
@@ -14,6 +14,7 @@ import {
 } from "@chakra-ui/react";
 import { useSelector} from 'react-redux';
 import axios from 'axios'
+import { ImageSelectContext } from "../../../Context/DisplayImage";
 
 
 const REACT_APP_CLOUDINARY_CLOUD_NAME = "dvlpq6zex";
@@ -24,6 +25,7 @@ const baseURL='http://127.0.0.1:8001'
 
 const ProfileImage = () => {
     const authentication_user = useSelector(state => state.authentication_user)
+  const {displayImage, setDisplayImage} = useContext(ImageSelectContext)
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [uploadImage, setUploadImage] = useState("");
   const [loading, setLoading] = useState(false);
@@ -67,6 +69,7 @@ const ProfileImage = () => {
     setShowUrl("");
     setContent("");
     console.log('ffffffffffffffffff');
+    setDisplayImage("")
   };
   useEffect(() => {
     if (!isOpen) {
@@ -96,6 +99,7 @@ const ProfileImage = () => {
         console.log("hhh");
         if (profile) {
           setProfileImageUrl(res.public_id);
+          setDisplayImage(res.public_id)
         } else {
           setCoverImageUrl(res.public_id);
         }

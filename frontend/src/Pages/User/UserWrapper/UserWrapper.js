@@ -23,6 +23,7 @@ import VirtualFriend from "../../Chat/ai/VirtualFriend";
 import UserSettings from "../Settings/UserSettings";
 // import { NotificationProvider } from "../../../Context/WebSocketService";
 import PhotosMain from "../../Photos/PhotosMain";
+import DisplayImage from "../../../Context/DisplayImage";
 
 function UserWrapper() {
   const dispatch = useDispatch();
@@ -64,8 +65,9 @@ function UserWrapper() {
       {authentication_user.isAuthenticated === false ? (
         <LoginNav />
       ) : (
-        <Navbar />
+        < Navbar />
       )}
+
       <ChatSelect>
           <Routes>
             <Route path="login" element={<Login />} />

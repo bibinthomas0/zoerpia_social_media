@@ -9,33 +9,35 @@ services:
       - POSTGRES_DB=zorpia_auth
     ports:
       - "5432:5432"
-  auth:
-    volumes:
-      - static:/static
+
+  authentication:
     env_file:
       - .env
     build:
       context: ./backend/authentication
-    ports:
-      - "8001:8001"
-  adminside:
-    volumes:
-      - static:/static
+
+    depends_on:
+      - db
+
+  chatapp:
     env_file:
       - .env
     build:
-      context: ./backend/adminside
+      context: ./backend/chatapp
+
+    command: 'python -u consumer.py'
+    depends_on:
+      - redis
+  redis:
+    image: "redis:alpine"
     ports:
-      - "8002:8002"
+      - "6379:6379"
+
   userside:
-    volumes:
-      - static:/static
     env_file:
       - .env
     build:
       context: ./backend/userside
-    ports:
-      - "8003:8003"
   frontend:
     build:
       context: ./frontend
@@ -45,14 +47,11 @@ services:
     build:
       context: ./nginx
     volumes:
-      - static:/static
       - frontend:/var/www/frontend
     ports:
       - "80:80"
     depends_on:
-      - auth
       - frontend
 
 volumes:
-  static:
   frontend:

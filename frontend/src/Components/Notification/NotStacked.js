@@ -1,20 +1,20 @@
 import React from "react";
-import { MDBNotification, MDBContainer } from "mdbreact";
+// import { MDBNotification, MDBContainer } from "mdbreact";
 
 const NotStacked = (props) => {
   return (
-    <div
-      style={{
-        width: "200px",
-          position: "fixed",
-          top: "10px",
-          right: {base:'',xl:'10px'},
+    // <div
+    //   style={{
+    //     width: "200px",
+    //       position: "fixed",
+    //       top: "10px",
+    //       right: {base:'',xl:'10px'},
     
-        zIndex: 9999
-      }}
-    >
+    //     zIndex: 9999
+    //   }}
+    // >
      
-      <MDBNotification
+      {/* <MDBNotification
         show
         fade
         className="m-3" 
@@ -23,7 +23,7 @@ const NotStacked = (props) => {
         message={`Your post has been liked by ${props.by_user}`}
         text="2 seconds ago"
       />
-    </div>
+    </div> */}
   );
 };
 

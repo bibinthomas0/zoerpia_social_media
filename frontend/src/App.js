@@ -8,6 +8,7 @@ import { GoogleOAuthProvider,GoogleLogin } from '@react-oauth/google';
 import { PersistGate } from 'redux-persist/integration/react';
 import { SocketProvider } from "./provider/SocketProvider";
 import { NotificationProvider } from "./Context/WebSocketService";
+import DisplayImage from "./Context/DisplayImage";
 
 function App() {
   return (
@@ -21,8 +22,10 @@ function App() {
       <NotificationProvider>
 
       <Routes>
-        <Route path="*" element={<UserWrapper/>}/>
+        
+        <Route path="/*" element={<DisplayImage><UserWrapper/> </DisplayImage>}/>
         <Route path="admincontrol/*" element={<AdminWrapper/>}/>
+       
       </Routes>
       </NotificationProvider>
 
