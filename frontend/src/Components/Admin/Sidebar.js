@@ -14,7 +14,6 @@ import {
   MenuItem,
   useColorModeValue,
 } from "@chakra-ui/react";
-
 import {
   AiOutlineTeam,
   AiOutlineComment,
@@ -22,7 +21,6 @@ import {
   AiOutlinePhone,
   AiOutlineStar,
 } from "react-icons/ai";
-
 import { BsFolder2, BsCalendarCheck } from "react-icons/bs";
 import { FiMenu } from "react-icons/fi";
 import { RiFlashlightFill } from "react-icons/ri";

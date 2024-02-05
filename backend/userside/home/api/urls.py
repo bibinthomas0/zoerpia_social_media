@@ -32,5 +32,6 @@ urlpatterns = [
     path("commentdelete/", views.CommentDelete.as_view(), name="commentdelete"),
      path("createreply/", views.ReplyCommentCreate.as_view(), name="createreply"),
      path("replylist/", views.ReplyCommentListing.as_view(), name="replylist"), 
+     path("notifyunreadlist/", views.NotificationsUnreadList.as_view(), name="notifyunreadlist"),
 ]
    

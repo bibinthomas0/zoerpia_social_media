@@ -24,6 +24,7 @@ import UserSettings from "../Settings/UserSettings";
 // import { NotificationProvider } from "../../../Context/WebSocketService";
 import PhotosMain from "../../Photos/PhotosMain";
 import DisplayImage from "../../../Context/DisplayImage";
+import NotificationHome from "../Notification/NotificationHome";
 
 function UserWrapper() {
   const dispatch = useDispatch();
@@ -98,7 +99,7 @@ function UserWrapper() {
               }
             />
             <Route path="user/:username" element={<Friendprofile />} />
-            <Route path="photos" element={<PhotosMain/>} /> 
+            <Route path="notification" element={<NotificationHome/>} /> 
             <Route path="chatlist" element={<ChatList />} />
             <Route path="/settings" element={<UserSettings />} />
           </Routes>

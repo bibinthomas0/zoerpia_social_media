@@ -32,7 +32,6 @@ function OtpVerification() {
       };
       const dispatch = useDispatch();
       const [userOtp,setUserOtp] = useState("")
-      const targetDate = Date.now() + 990000;
       const userRegDetails = useSelector(state => state.User_registration)
       const [formError, setFormError] = useState("")
       const navigate = useNavigate();
@@ -46,16 +45,38 @@ function OtpVerification() {
 
     
 
-      useEffect(() => {
-        setOtp(userRegDetails.otp) 
-  
-      }, []);
-      
-      
-      console.log("old",Otp)
+const validateOtp = async () =>{
+  try {
+    let data ={"otp":userOtp,'email':userRegDetails.email} 
+    const res = await axios.post(baseURL+'/api/accounts/otpvalidation/',data )
+    if(res.status === 202){
+      handleRegistration()
+      console.log('validated')
+ 
+    
+  }}
+  catch (error) {
+    
+    if (error.response.status===406)
+    {
+ 
+      setFormError(error.response.data)
+    }
+    else
+    {
+      console.log(error);
 
-      const HandleOtp = async () =>{
-        if(Otp === userOtp){ 
+    }
+  }
+
+}
+
+
+
+
+
+      const handleRegistration = async () =>{
+  
           try {
             const res = await axios.post(baseURL+'/api/accounts/register/', userRegDetails)
             if(res.status === 201){
@@ -88,20 +109,19 @@ function OtpVerification() {
         
             }
           }
-        }else{
-          setFormError("invalid Otp")
-        }
       }
+
+
+
       const resendOtp = async () =>{
-        const emailObject = {
+        const data = {
           email: userRegDetails.email
           
         };
         try {
-          const res = await axios.post(baseURL + "/api/accounts/otp/", emailObject);
+          const res = await axios.post(baseURL + "/api/accounts/otp/", data);
           if (res.status === 201) {
-    
-            setOtp(res.data.otp)
+    console.log('sended')
        
         
              
@@ -120,11 +140,8 @@ function OtpVerification() {
       useEffect(() => {
         const timer = setInterval(() => {
           setSeconds((prevSeconds) => prevSeconds - 1);
-        }, 1000);
-    
-        
-        return () => clearInterval(timer);
-      }, [setOtp]);
+        });
+      }, []);
  
 
 
@@ -177,9 +194,9 @@ function OtpVerification() {
                 bg: "green.500",
                 color: "white",
               }}
-              onClick={HandleOtp}
+              onClick={validateOtp}
             >
-              verify
+              verify 
             </Button>
           </Stack>
           <Stack

@@ -100,7 +100,6 @@ function Usercreation({ onChildData }) {
     try {
       const res = await axios.post(baseURL + "/api/accounts/otp/", Email);
       if (res.status === 201) {
-        console.log(res.data.otp);
         dispatch(
           setUser_registration({
             name: name,
@@ -108,7 +107,6 @@ function Usercreation({ onChildData }) {
             email: Email.email,
             dob: birthdate,
             password: Password,
-            otp:res.data.otp
           })
         );
         sendDataToParent()
@@ -118,7 +116,6 @@ function Usercreation({ onChildData }) {
       if (error.response.status === 406) {
         console.log("error");
         console.log(error.response.data);
-        setFormError(error.response.data);
       } else {
         console.log(error);
       }

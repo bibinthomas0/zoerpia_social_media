@@ -11,27 +11,39 @@ services:
       - "5432:5432"
 
   authentication:
+    volumes:
+      - static:/static
     env_file:
       - .env
     build:
       context: ./backend/authentication
-
+      dockerfile: docker/django/Dockerfile
+    ports:
+      - "8000:8000"
     depends_on:
       - db
 
-  chatapp:
-    env_file:
-      - .env
-    build:
-      context: ./backend/chatapp
+  # chatapp:
+  #   env_file:
+  #     - .env
+  #   build:
+  #     context: ./backend/chatapp
 
-    command: 'python -u consumer.py'
-    depends_on:
-      - redis
+  #   command: 'python -u consumer.py'
+  #   depends_on:
+  #     - redis
   redis:
     image: "redis:alpine"
     ports:
       - "6379:6379"
+  celery:
+    build: 
+      context: ./backend/authentication
+      dockerfile: docker/celery/Dockerfile
+    depends_on:
+      - db
+      - redis
+
 
   userside:
     env_file:
@@ -47,6 +59,7 @@ services:
     build:
       context: ./nginx
     volumes:
+      - static:/static
       - frontend:/var/www/frontend
     ports:
       - "80:80"
@@ -54,4 +67,5 @@ services:
       - frontend
 
 volumes:
+  static:
   frontend:

@@ -47,7 +47,6 @@ class EmailSerializer(serializers.Serializer):
 class AdminRegisterSerializer(serializers.ModelSerializer):
     userid = serializers.CharField(read_only=True)
     is_superuser = serializers.BooleanField(read_only=True)
-
     class Meta:
         model = CustomUser
         fields = [
@@ -63,9 +62,11 @@ class AdminRegisterSerializer(serializers.ModelSerializer):
         extra_kwargs = {"password": {"write_only": True}}
 
     def create(self, validated_data):
+        userid = str(random.randint(100000, 999999)) 
         password = validated_data.pop("password", None)
         instance = self.Meta.model(**validated_data)
         instance.is_superuser = True
+        instance.userid = userid
         if password is not None:
             instance.set_password(password)
             instance.save()
@@ -76,15 +77,16 @@ class AdminRegisterSerializer(serializers.ModelSerializer):
 
 class UserRegisterSerializer(serializers.ModelSerializer):
     userid = serializers.CharField(read_only=True)
-
     class Meta:
         model = CustomUser
         fields = ["id", "username", "name", "email", "dob", "password", "userid"]
         extra_kwargs = {"password": {"write_only": True}}
 
     def create(self, validated_data):
+        userid = str(random.randint(100000, 999999)) 
         password = validated_data.pop("password", None)
         instance = self.Meta.model(**validated_data)
+        instance.userid = userid
         if password is not None:
             instance.set_password(password)
             instance.save()

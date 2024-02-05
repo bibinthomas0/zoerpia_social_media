@@ -17,6 +17,7 @@ const ThirdSection = () => {
     GetNotifications()
   }, [Notification]);
 
+
   const GetNotifications = async ()=>{
 console.log('calledd')
     try {
@@ -48,7 +49,7 @@ return (
     '&::-webkit-scrollbar-thumb': {
       backgroundColor: 'transparent',
     },
-  }} maxHeight="820px"
+  }} Height="820px"
   padding={'1%'}   >
     {notes.length === 0 ? (
       <Container overflow="auto"  sx={{

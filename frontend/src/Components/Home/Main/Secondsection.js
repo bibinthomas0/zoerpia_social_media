@@ -13,24 +13,31 @@ const baseURL='http://127.0.0.1:8001'
 function Secondsection() {
   const authentication_user = useSelector((state) => state.authentication_user);
   const [posts,setPosts] = useState([])
+  const [loading,setloading] = useState(false)
 
 
-
-  const Postlist = async () =>{
-    var data = { "userid": authentication_user.name };
-    const res = await axios.get(baseURL+'/api/home/listpost/',{ params: data } )
-    if(res.status === 200){
-  
-      setPosts(res.data)
-    
+  const Postlist = async () => {
+    setloading(true)
+    try {
+      var data = { "userid": authentication_user.name };
+      const res = await axios.get(baseURL + '/api/home/listpost/', { params: data });
+      
+      if (res.status === 200) {
+        setPosts(res.data);
+        setloading(false)
+      }else if (res.status === 404){ 
+        console.log('errr'); 
+      }
+    } catch (error) {
+      console.error("Error fetching posts:", error);
+      setloading(false)
     }
-
-  }
+  };
+  
   useEffect(() => {
-    
-    Postlist()    
- 
+    Postlist();
   }, [Secondsection]);
+  
   
 
   return (<Box marginBottom={'4'}  overflow="auto"  sx={{
@@ -40,12 +47,14 @@ function Secondsection() {
     '&::-webkit-scrollbar-thumb': {
       backgroundColor: 'transparent',
     },
-  }} maxHeight="100vh"
+  }} 
+  height={'825px'}
+  maxHeight="100vh"
   padding={'1%'}
   >
 
 
-
+ 
 
     <Postupload postlist={Postlist}/>
     <Tabs isFitted variant='enclosed' marginTop={'2%'} >
@@ -56,16 +65,17 @@ function Secondsection() {
   <TabPanels>
     <TabPanel>
     {
-  posts.length===0 ?(
+  loading ?(
 
     <PulseCards/>
-  ):(
-      
+  ): posts.length ===0?(<div>No post available</div>):(
   posts.map((post) => {
 
-    return <PostView _id={post._id} user={post.user} image={post.image} content={post.content} likes={post.likes} postlist={Postlist} time={post.created_at} />;
+    return <PostView key={post._id} _id={post._id} user={post.user} image={post.image} content={post.content} likes={post.likes} postlist={Postlist} time={post.created_at} />;
   })
-  )}
+  )
+  
+  }
     </TabPanel>
     <TabPanel>
     <RecommendedPost/>

@@ -5,27 +5,44 @@ import PulseCards from "../Main/SkeltonHome";
 import PostView from "./PostView";
 
 const baseURL = "http://127.0.0.1:8001";
+
 const RecommendedPost = () => {
     const authentication_user = useSelector((state) => state.authentication_user);
     const [posts,setPosts] = useState([])
-  const Postlist = async () =>{
-    var data = { "userid": authentication_user.name };
-    const res = await axios.get(baseURL+'/api/home/recomendaion/', { params: data } )
-    if(res.status === 200){
-  
-      setPosts(res.data)
-    }
 
-  }
+    const Postlist = async () => {
+      try {
+        var data = { "userid": authentication_user.name };
+        const res = await axios.get(baseURL + '/api/home/recomendaion/', { params: data });
+    
+        if (res.status === 200) {
+          setPosts(res.data);
+        } else if (res.status === 404) {
+          console.log('kk');
+        } else {
+          console.error('Unexpected response:', res);
+        }
+      } catch (error) {
+        console.error('Error fetching posts:', error);
+    
+        // You can handle specific error types if needed
+        if (axios.isAxiosError(error) && error.response) {
+          console.error('Response data:', error.response.data);
+          console.error('Response status:', error.response.status);
+        }
+      }
+    };
+     
   useEffect(() => {
     
     Postlist() 
-  
+     
   }, []);
   return (
 <>
     {
-        posts.length===0 ?(
+        posts.length===0
+         ?(
       
           <PulseCards/>
         ):(

@@ -19,6 +19,8 @@ from verification.managers import CustomUserManager
 from django.contrib.auth import logout
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.filters import SearchFilter
+from verification.tasks import send_notification_mail
+from verification.models import UserOtp
 
 
 class getAccountsRoutes(APIView):
@@ -54,7 +56,6 @@ class LoginView(APIView):
         try:
             email = request.data["email"]
             password = request.data["password"]
-            print(email, password)
         except KeyError:
             content = "All Fields Are Required"
             return Response(
@@ -80,39 +81,30 @@ class LoginView(APIView):
                 return Response(content, status=status.HTTP_410_GONE)
             refresh = RefreshToken.for_user(user)
             refresh["username"] = str(user.username)
-
             content = {
                 "refresh": str(refresh),
                 "access": str(refresh.access_token),
                 "isAdmin": user.is_superuser,
             }
-
+           
+            
         return Response(content, status=status.HTTP_200_OK)
 
 
 class OtpRequestView(APIView):
     def post(self, request, *args, **kwargs):
-        serializer = OtpRequestSerializer(data=request.data)
-        if serializer.is_valid():
-            email = serializer.validated_data["email"]
-            if CustomUser.objects.filter(email=email).exists():
-                content = {"Message": "email already registered"}
-                return Response(
-                    content,
-                    status=status.HTTP_406_NOT_ACCEPTABLE,
-                )
-            else:
-                custom_user_manager = CustomUserManager()
-                content = custom_user_manager.send_otp_email(request, email)
-                if content is not None:
-                    otp = {"otp": content}
-                    return Response(otp, status=status.HTTP_201_CREATED)
-                else:
-                    return Response(
-                        {"error": "An error occurred while sending the OTP"},
-                        status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                    )
-
+        email = request.data["email"]
+        if CustomUser.objects.filter(email=email).exists():
+            content = {"Message": "email already registered"}
+            return Response(
+                content,
+                status=status.HTTP_406_NOT_ACCEPTABLE,
+            )
+        else:
+            send_notification_mail(email)
+            return Response( status=status.HTTP_201_CREATED)
+ 
+ 
 
 class UsernameValidation(APIView):
     def post(self, request):
@@ -149,11 +141,15 @@ class ForgotPassword(APIView):
 
 
 class OtpValidation(APIView):
+    def verify_otp(userotp, authotp):
+        return int(userotp) == int(authotp)
+    
     def post(self, request):
         userotp = request.data["otp"]
-        authotp = request.data["authotp"]
-        print(userotp, authotp)
-        if userotp == authotp:
+        email = request.data['email']
+        authotp = UserOtp.objects.filter(email=email).order_by("-created_at").first().otp
+        print(userotp,authotp)
+        if OtpValidation.verify_otp(userotp, authotp):
             print("hi")
             return Response(status=status.HTTP_202_ACCEPTED)
         else:

@@ -58,25 +58,28 @@ class CreatePost(APIView):
 
 class PostListView(APIView):
     def get(self, request):
-        posts_cursor = post_collection.find().sort("created_at", -1)
-        user_id = request.query_params.get("userid")
-        print(user_id)
-        user = Follow.find_one({"user": user_id})
-        following = user["following"]
-        following.append(user_id)
-        print(following)
-        posts_data = []
-        for post in posts_cursor:
-            post["_id"] = str(post["_id"])
-            try:
-                if post["verified"]:
-                    continue
-            except:
-                if post["user"] in following:
-                    posts_data.append(post)
-        return Response(
-            posts_data, status=status.HTTP_200_OK, content_type="application/json"
-        )
+        try:
+            posts_cursor = post_collection.find().sort("created_at", -1)
+            user_id = request.query_params.get("userid")
+            print(user_id)
+            user = Follow.find_one({"user": user_id})
+            following = user["following"]
+            following.append(user_id)
+            print(following)
+            posts_data = []
+            for post in posts_cursor:
+                post["_id"] = str(post["_id"])
+                try:
+                    if post["verified"]:
+                        continue
+                except:
+                    if post["user"] in following:
+                        posts_data.append(post)
+            return Response(
+                posts_data, status=status.HTTP_200_OK, content_type="application/json"
+            )
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
 
 class PostLikeView(APIView):
@@ -128,7 +131,7 @@ class PostLikeView(APIView):
         else: 
             if userr != liked_by:
                 date = datetime.now()
-                data = {"by_user": liked_by, "post_id": liked_post_oid, "notification_type": "like", 'user': userr, 'created_at': date}
+                data = {"by_user": liked_by, "post_id": liked_post_oid, "notification_type": "like", 'user': userr, 'created_at': date,'seen':False}
                 Notification.insert_one(data)
                 publish(
                     method="like",
@@ -469,23 +472,27 @@ class RecommendedPosts(APIView):
         try:
             user_id = request.query_params.get("userid")
             print(user_id)
-            user = UserChips.find_one({"user": user_id})
-            print(user)
-            if user:
-                user_chips = user.get("chips", [])
-                print(user_chips)
+            posts_data = []
+            
+            try:
+                user = UserChips.find_one({"user": user_id})
+                print(user)
+                if user:
+                    
+                    user_chips = user.get("chips", [])
+                    print(user_chips)
 
-                posts_cursor = post_collection.find({"verified": {"$ne": True}}).sort(
-                    "created_at", -1
-                )
-                posts_data = []
+                    posts_cursor = post_collection.find({"verified": {"$ne": True}}).sort(
+                        "created_at", -1
+                    )
 
-                for post in posts_cursor:
-                    post["_id"] = str(post["_id"])
-                    post_chips = post.get("chips", [])
+                    for post in posts_cursor:
+                        post["_id"] = str(post["_id"])
+                        post_chips = post.get("chips", [])
 
-                    if any(chip in user_chips for chip in post_chips):
-                        posts_data.append(post)
+                        if any(chip in user_chips for chip in post_chips):
+                            posts_data.append(post)
+            finally:
                 posts_cursor = post_collection.find().sort("created_at", -1)
                 for post in posts_cursor:
                     post["_id"] = str(post["_id"])
@@ -496,8 +503,8 @@ class RecommendedPosts(APIView):
                         if post not in posts_data:
                             posts_data.append(post)
                 return Response(data=posts_data, status=status.HTTP_200_OK)
-            else:
-                return Response(status=status.HTTP_404_NOT_FOUND)
+            # else:
+            #     return Response(status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             print(f"An error occurred: {e}")
             return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -563,5 +570,19 @@ class ReplyCommentListing(APIView):
         serializer = ReplyCommentSerializer(replyed_comments, many=True)
         if serializer.data:
             return Response(data=serializer.data, status=status.HTTP_200_OK )
+        else:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+
+
+class NotificationsUnreadList(APIView):
+    def get(self, request):
+        user_id = request.query_params.get("user_id", None)
+        data = list(Notification.find({"user": user_id},{'seen':False}).sort("created_at", -1))
+        print(user_id)
+        serializer = json.dumps(data, default=str)
+        result = Notification.update_many({'seen': True}, {'$set': {'seen': False}})
+        if serializer:
+            return Response(data=serializer, status=status.HTTP_200_OK,content_type="application/json")
         else:
             return Response(status=status.HTTP_404_NOT_FOUND)

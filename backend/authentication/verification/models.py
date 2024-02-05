@@ -38,3 +38,8 @@ class Userdetails(models.Model):
     
     def __str__(self):
         return self.userr.username
+
+class UserOtp(models.Model):
+    email = models.EmailField()
+    otp = models.PositiveBigIntegerField()
+    created_at = models.DateTimeField(auto_now_add=True)
