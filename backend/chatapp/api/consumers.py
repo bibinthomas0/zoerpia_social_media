@@ -22,6 +22,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
         print("Connecting...")
         print("rtrt", self.scope["url_route"]["kwargs"]["username"])
         self.room_name = self.scope["url_route"]["kwargs"]["room_name"]
+        
+
+        
         self.userr = self.scope["url_route"]["kwargs"]["username"] or "Anonymous"
         if not self.room_name or len(self.room_name) > 100:
             await self.close(code=400)
@@ -35,8 +38,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         await self.create_online_user(self.user)
         await self.send_user_list()
         await self.seen_messages()
-        # consumer_instance = NotificationConsumer()
-        # await consumer_instance.get_unread_messages()
+
 
     async def disconnect(self, close_code):
         await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
@@ -51,6 +53,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         await self.seen_messages()
         message_obj = await self.create_message(message, m_type)
         if message_obj:
+            
             await self.channel_layer.group_send(
                 self.room_group_name,
                 {
@@ -206,7 +209,7 @@ class NotificationConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps({"type":"unread_messages","unread_messages": unread}))
 
     def generate_mixed_string(self, length=10):
-        characters = string.digits + string.ascii_letters
+        characters = string.ascii_letters
         mixed_string = "".join(random.choice(characters) for _ in range(length))
         return mixed_string
 

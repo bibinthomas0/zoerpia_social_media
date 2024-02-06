@@ -54,7 +54,7 @@ class Chatroomlist(generics.ListCreateAPIView):
             )
 
 class FindRoom(APIView):
-    def generate_mixed_string(self, length=10):
+    def generate_mixed_string(self, length=5):
         characters = string.digits + string.ascii_letters 
         mixed_string = ''.join(random.choice(characters) for _ in range(length))
         return mixed_string

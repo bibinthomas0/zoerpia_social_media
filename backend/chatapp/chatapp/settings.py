@@ -99,10 +99,10 @@ WSGI_APPLICATION = 'chatapp.wsgi.application'
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "zorpia_auth",
+        "NAME": "zorpia_chat",
         "USER": "bibin",
         "PASSWORD": "bibin",
-        "HOST": "db",
+        "HOST": "localhost",
         "PORT": "5432",
     }
 }

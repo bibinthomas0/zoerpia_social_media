@@ -2,7 +2,7 @@ import React, { useContext, useState, useEffect } from "react";
 import NotifyComp from "../../Notification/NotifyComp";
 import axios from 'axios';
 import {useSelector} from "react-redux";
-import { Box, Center, Container } from "@chakra-ui/react";
+import { Box, Center, Container,Flex } from "@chakra-ui/react";
 import { useNotification } from "../../../Context/WebSocketService";
 
 const baseURL = "http://127.0.0.1:8001";
@@ -12,31 +12,7 @@ const ThirdSection = () => {
   const [notes, setNotes] = useState([]);
 
 
-  useEffect(() => {
-    console.log(Notification)
-    GetNotifications()
-  }, [Notification]);
 
-
-  const GetNotifications = async ()=>{
-console.log('calledd')
-    try {
-        const userId = authentication_user.name; 
-const res = await axios.get(baseURL + '/api/home/notifylist/', {
-  params: { user_id: userId },
-});
-  
-        if (res.status === 200) {
-          const parsedData = JSON.parse(res.data)
-        
-// console.log('gggggggg',parsedData)
-          setNotes(parsedData);  
-        } 
-      } catch (error) {
-        console.error('Error fetching comments:', error);
-      }
-
-}
 
 
 
@@ -59,19 +35,18 @@ return (
         '&::-webkit-scrollbar-thumb': {
           backgroundColor: 'transparent',
         },
-      }}> <Center paddingTop={'50%'}>No Notifications....</Center>  </Container>
+      }}>
+     <Flex style={{Height:"20px",backgroundColor:"blue"}}>hi
+     <Box>   </Box>
+     
+     
+     </Flex>
+        
+        
+          </Container>
     ) : (
-      notes.map((data) => (
-        <NotifyComp
-          key={data.id} 
-          user={data.user}
-          notification_type={data.notification_type}
-          time={data.created_at}
-          post_id={data.post_id} 
-          by_user={data.by_user}
-          comment={data.comment}
-        />
-      ))
+      <Center paddingTop={'50%'}>No users is online...</Center> 
+
      )} 
   </Container>
 );

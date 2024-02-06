@@ -10,7 +10,7 @@ class User(models.Model):
 
 
 class Room(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.TextField(max_length=100)
     userslist = models.ManyToManyField(to=User, blank=True)
     @property
     def online(self):

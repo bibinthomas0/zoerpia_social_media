@@ -35,7 +35,7 @@ console.log("Total length of all arrays:", totalLength);
 
 useEffect(() => {
   GetUnreadnotifications()   
-}, [socket]);
+}, [Notification]);
  
 
   
