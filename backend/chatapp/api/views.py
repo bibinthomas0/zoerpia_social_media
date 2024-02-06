@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework import generics
 from .models import Message, Room, User,NotificationRoom
-from .serializers import MessageSerializer, RoomSerializer, Userserializer
+from .serializers import MessageSerializer, RoomSerializer, UserSerializer,Userserializer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
@@ -157,3 +157,11 @@ class send_notification(APIView):
 
         return Response(status=status.HTTP_200_OK)
 
+class OnlineUserListView(APIView):
+    def get(self,request):
+        print('kk')
+        users = User.objects.filter(is_online=True)
+          
+        serializer = UserSerializer(users,many=True)
+        return Response(data=serializer.data,status=status.HTTP_200_OK)
+ 

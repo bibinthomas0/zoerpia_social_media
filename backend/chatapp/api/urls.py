@@ -15,4 +15,5 @@ urlpatterns = [
     path('bardresponse/',views.GoogleBardResponse.as_view(),name="bardresponse"),
     path('lastmessage/',views.GetLastMessage.as_view(),name="lastmessage"),
     path('send_notification/', views.send_notification.as_view() , name='send_notification'),
+    path('online-users/', views.OnlineUserListView.as_view(), name='online-users-list'),
 ]

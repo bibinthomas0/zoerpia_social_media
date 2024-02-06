@@ -67,7 +67,7 @@ const GetUnreadnotifications = async ()=>{
   
         <Homesidebar title="Home" icon={FcHome} select={true} navigation={'/'} />
         <Homesidebar title="Profile" icon={FcBusinessman } navigation={'/profile'} />
-        <Homesidebar title={`Messages (${count})`} icon={MdOutlineChat }  navigation={'chatlist'} />
+        <Homesidebar title={`Messages (${count})`} icon={MdOutlineChat }  navigation={'/chatlist'} />
         <Homesidebar title={`Notifications (${unread_Not.length})`} icon={FcAlarmClock } navigation={'/notification'}/>
         {/* <Homesidebar title="Premium" icon={FaStar} /> */}
         <Homesidebar title="Settings" icon={FcSettings}  navigation={'/settings'}  />

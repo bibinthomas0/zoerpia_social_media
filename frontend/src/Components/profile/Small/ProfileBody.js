@@ -75,8 +75,8 @@ const ProfileBody = () => {
     <Tabs isFitted variant="enclosed" borderColor={'black'}>
       <TabList mb="1em">
         <Tab>Posts</Tab>
-        <Tab>Following</Tab>
-        <Tab>Followers</Tab>
+        <Tab>Following({following.length})</Tab>
+        <Tab>Followers({followers.length})</Tab>
       </TabList>
       <TabPanels>
         <TabPanel>
