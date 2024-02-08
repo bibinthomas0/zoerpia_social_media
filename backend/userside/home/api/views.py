@@ -285,20 +285,25 @@ class FollowPostChecking(APIView):
 
 class FollowingUsers(APIView):
     def post(self, request):
-        user = request.data["user"]
-        datas = Follow.find_one({"user": user})
-        data = datas["following"]
-        print(data)
-        return Response(data=data, status=status.HTTP_202_ACCEPTED)
-
+        try:
+            user = request.data["user"]
+            datas = Follow.find_one({"user": user})
+            data = datas["following"]
+            print(data)
+            return Response(data=data, status=status.HTTP_202_ACCEPTED)
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
 class FollowersUsers(APIView):
-    def post(self, request):
-        user = request.data["user"]
-        datas = Follow.find_one({"user": user})
-        data = datas["followers"]
-        print(data)
-        return Response(data=data, status=status.HTTP_202_ACCEPTED)
+    def post(self, request): 
+        try:
+            user = request.data["user"]
+            datas = Follow.find_one({"user": user})
+            data = datas["followers"]
+            print(data)
+            return Response(data=data, status=status.HTTP_202_ACCEPTED)
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
 
 class CommentReport(APIView):

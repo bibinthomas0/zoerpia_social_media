@@ -103,7 +103,7 @@ DATABASES = {
         "NAME": "zorpia_auth",
         "USER": "bibin",
         "PASSWORD": "bibin",
-        "HOST": "localhost",
+        "HOST": "db",
         "PORT": "5432",
     }
 }

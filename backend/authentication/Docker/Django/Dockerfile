@@ -11,7 +11,7 @@ COPY . /app/
 
 COPY ./entrypoint.sh .
 
-
+# RUN python manage.py collectstatic --noinput
 
 CMD ["gunicorn", "--bind", "0.0.0.0:8000", "authentication.wsgi:application"]
 

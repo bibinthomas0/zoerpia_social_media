@@ -102,7 +102,7 @@ DATABASES = {
         "NAME": "zorpia_chat",
         "USER": "bibin",
         "PASSWORD": "bibin",
-        "HOST": "localhost",
+        "HOST": "dbchat",
         "PORT": "5432",
     }
 }
@@ -130,7 +130,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 
 
-REDIS_HOST = '127.0.0.1'  # Use the actual IP address
+REDIS_HOST = 'redis'
 REDIS_PORT = 6379
 
 CHANNEL_LAYERS = {

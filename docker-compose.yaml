@@ -9,16 +9,24 @@ services:
       - POSTGRES_DB=zorpia_auth
     ports:
       - "5432:5432"
-
+  dbchat:
+    image: postgres:latest
+    environment:
+      - POSTGRES_USER=bibin
+      - POSTGRES_PASSWORD=bibin
+      - POSTGRES_DB=zorpia_chat
+    ports:
+      - "5433:5432"
 
   redis:
     image: "redis:alpine"
     ports:
       - "6379:6379"
 
+
   authentication:
     volumes:
-      - static:/static
+      - static_authentication:/static
     env_file:
       - .env
     build:
@@ -29,16 +37,35 @@ services:
     depends_on:
       - frontend
 
-  # chatapp:
-  #   env_file:
-  #     - .env
-  #   build:
-  #     context: ./backend/chatapp
+  chatapp:
+    volumes:
+      - static_chatapp:/static
+    env_file:
+      - .env
+    build:
+      context: ./backend/chatapp
+    command: 'python -u consumer.py'
+    ports:
+      - "8002:8002"
+    depends_on:
+      - redis
+      - dbchat
 
-  #   command: 'python -u consumer.py'
-  #   depends_on:
-  #     - redis
-  
+  userside:
+    volumes:
+      - static_userside:/static
+    env_file:
+      - .env
+    build:
+      context: ./backend/userside
+    ports:
+      - "8001:8001"
+
+  frontend:
+    build:
+      context: ./frontend
+    volumes:
+      - frontend:/app/build
   celery:
     build: 
       context: ./backend/authentication
@@ -46,22 +73,13 @@ services:
     depends_on:
       - redis
 
-
-  userside:
-    env_file:
-      - .env
-    build:
-      context: ./backend/userside
-  frontend:
-    build:
-      context: ./frontend
-    volumes:
-      - frontend:/app/build
   nginx:
     build:
       context: ./nginx
     volumes:
-      - static:/static
+      - static_userside:/static_userside
+      - static_authentication:/static_authentication
+      - static_chatapp:/static_chatapp
       - frontend:/var/www/frontend
     ports:
       - "80:80"
@@ -69,5 +87,7 @@ services:
       - frontend
 
 volumes:
-  static:
+  static_userside:
+  static_authentication:
+  static_chatapp:
   frontend:
