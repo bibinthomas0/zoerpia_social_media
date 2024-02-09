@@ -37,6 +37,19 @@ services:
     depends_on:
       - frontend
 
+
+  daphne:
+      build:
+        context: ./backend/chatapp
+      image: "chatapp:latest"
+      command: bash -c "daphne -b 0.0.0.0 -p 8002 chatapp.asgi:application"
+      ports:
+        - "8002:8002"
+      depends_on:
+        - redis
+        - chatapp
+
+
   chatapp:
     volumes:
       - static_chatapp:/static
@@ -45,8 +58,8 @@ services:
     build:
       context: ./backend/chatapp
     command: 'python -u consumer.py'
-    ports:
-      - "8002:8002"
+    # ports:
+    #   - "8002:8002"
     depends_on:
       - redis
       - dbchat
@@ -66,6 +79,9 @@ services:
       context: ./frontend
     volumes:
       - frontend:/app/build
+    environment:
+      - watchpack_polling=true
+
   celery:
     build: 
       context: ./backend/authentication

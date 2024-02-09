@@ -42,11 +42,18 @@ export default function ChatPage() {
   const [imageUrl, setImageUrl] = useState("");
   const [loading, setloading] = useState(false);
   const { SocketManagement } = useNotification();
+
+  var ws_scheme = window.location.protocol === "https:" ? "wss" : "ws";
+
+  const ws_port = '';
+  let url =   ws_scheme+'://'+ 'localhost:8002' +`/ws/notify/${authentication_user.name}/`
+
   useEffect(() => {
     uploadImage();
   }, [selectedImage]);
 
   const uploadImage = async () => {
+
     setloading(true);
     const data = new FormData();
     data.append("file", selectedImage);
@@ -151,7 +158,7 @@ export default function ChatPage() {
         console.log("Previous WebSocket disconnected");
       }
       const newSocket = new ReconnectingWebSocket(
-        `ws://localhost:8002/ws/chat/${room}/${authentication_user.name}/`
+        ws_scheme+`://localhost:8002/ws/chat/${room}/${authentication_user.name}/`
       );
       setSocket(newSocket);
       newSocket.onopen = () =>{ 

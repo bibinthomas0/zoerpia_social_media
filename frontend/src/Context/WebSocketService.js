@@ -22,6 +22,10 @@ export const NotificationProvider = ({ children })=> {
   const [unread_msg,setUnread_msg] = useState([])
   const [msg_accept,setMsg_accept] = useState(false)
 
+  var ws_scheme = window.location.protocol === "https:" ? "wss" : "ws";
+
+  const ws_port = '';
+  let url =   ws_scheme+'://'+ 'localhost:8002' + ws_port + `/ws/notify/${authentication_user.name}/`
   const SocketManagement = () => {
     if (authentication_user.name) {
       // if (socket) {
@@ -29,7 +33,8 @@ export const NotificationProvider = ({ children })=> {
       //   console.log("Previous WebSocket disconnected");
       // }
       const newSocket = new ReconnectingWebSocket(
-        `ws://localhost:8002/ws/notify/${authentication_user.name}/`
+      url
+        // `ws://localhost:8002/ws/notify/${authentication_user.name}/`
       );
       setSocket(newSocket);
       newSocket.onopen = () => console.log("WebSocket connected");
