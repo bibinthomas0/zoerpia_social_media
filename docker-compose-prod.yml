@@ -1,0 +1,111 @@
+version: '3.7'
+
+services:
+  db:
+    image: postgres:latest
+    environment:
+      - POSTGRES_USER=bibin
+      - POSTGRES_PASSWORD=bibin
+      - POSTGRES_DB=zorpia_auth
+    ports:
+      - "5432:5432"
+  dbchat:
+    image: postgres:latest
+    environment:
+      - POSTGRES_USER=bibin
+      - POSTGRES_PASSWORD=bibin
+      - POSTGRES_DB=zorpia_chat
+    ports:
+      - "5433:5432"
+
+  redis:
+    image: "redis:alpine"
+    ports:
+      - "6379:6379"
+  daphne:
+      image: bibin12/zorpia:daphne
+      command: bash -c "daphne -b 0.0.0.0 -p 8002 chatapp.asgi:application"
+      ports:
+        - "8002:8002"
+      depends_on:
+        - redis
+        - chatapp
+
+  authentication:
+    image: bibin12/zorpia:zorpia_sm-authentication
+    volumes:
+      - static_authentication:/static
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    command: 'python manage.py migrate'
+    depends_on:
+      - frontend
+      - db
+
+
+  chatapp:
+    image: bibin12/zorpia:zorpia_sm-chatapp
+    volumes:
+      - static_chatapp:/static
+    env_file:
+      - .env
+    command: python -u consumer.py
+    depends_on:
+      - redis
+      - dbchat
+      - db
+
+  userside:
+    image: bibin12/zorpia:zorpia_sm-userside
+    volumes:
+      - static_userside:/static
+    env_file:
+      - .env
+    ports:
+      - "8001:8001"
+
+  frontend:
+    image: bibin12/zorpia:zorpia_sm-frontend
+    volumes:
+      - frontend:/app/build
+    ports:
+        - "3000:3000"
+    environment:
+      - watchpack_polling=true
+
+  celery:
+    image: bibin12/zorpia:zorpia_sm-celery
+    depends_on:
+      - redis
+
+  nginx:
+    image: bibin12/zorpia:zorpia_sm-nginx
+    restart: unless-stopped
+    volumes:
+      - frontend:/var/www/frontend
+      - ./nginx/default.conf:/etc/nginx/nginx.conf
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    ports:
+        - 80:80
+        - 443:443
+    depends_on:
+      - frontend
+      - daphne
+      - chatapp
+      - userside
+      - authentication
+  certbot:
+    image: certbot/certbot
+    container_name: certbot
+    volumes: 
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    command: certonly --webroot -w /var/www/certbot --force-renewal --email tbibin001@gmail.com -d zorpia.online --agree-tos
+volumes:
+  static_userside:
+  static_authentication:
+  static_chatapp:
+  frontend:

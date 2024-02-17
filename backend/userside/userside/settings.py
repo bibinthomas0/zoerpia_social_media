@@ -26,10 +26,13 @@ SECRET_KEY = "django-insecure-if2z-yp=ofuo2oob@@(uz!=)o*42tp(4$$y*=clo#$%)&vvn7g
 DEBUG = True
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost",
-    "http://127.0.0.1",
-    "http://0.0.0.0",
-    "http://localhost:3000",
+    'http://localhost',
+    'http://127.0.0.1',
+    'http://0.0.0.0',
+    'http://localhost:3000',
+    'http://zorpia.online'
+    'http://localhost:80',
+    'https://zorpia.online'
 ]
 
 CORS_ALLOW_CREDENTIALS = True

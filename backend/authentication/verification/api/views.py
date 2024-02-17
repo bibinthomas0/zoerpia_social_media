@@ -275,3 +275,7 @@ class UpdateBirthDate(APIView):
             return Response(status=status.HTTP_202_ACCEPTED)
         except CustomUser.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
+
+
+def HealthCheck(request):
+    return Response(status=status.HTTP_200_OK)

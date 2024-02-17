@@ -14,7 +14,7 @@ const SecondSectionProfile = () => {
         '&::-webkit-scrollbar-thumb': {
           backgroundColor: 'transparent',
         },
-      }} maxHeight="825px">
+      }} Height="825px">
     <ProfileImage/>
     <ProfileDetails/>
     <ProfileBody/>

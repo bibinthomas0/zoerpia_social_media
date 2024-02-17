@@ -9,9 +9,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . /app/
 
 
-COPY ./entrypoint.sh .
+# COPY ./entrypoint.sh .
 
 # RUN python manage.py collectstatic --noinput
-
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "authentication.wsgi:application"]
+CMD ["sh", "-c", "python manage.py makemigrations && python manage.py migrate && gunicorn --bind 0.0.0.0:8000 authentication.wsgi:application"]
 

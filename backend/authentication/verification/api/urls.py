@@ -23,5 +23,6 @@ urlpatterns = [
     path('userdetail/', views.UserDetail.as_view(), name='userdetail'),
     path('updatename/', views.UpdateName.as_view(), name='updatename'),
     path('updatedob/', views.UpdateBirthDate.as_view(), name='updatedob'),
+    path('health/', views.HealthCheck, name='health'),
     
 ]

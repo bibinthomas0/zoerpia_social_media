@@ -27,11 +27,13 @@ SECRET_KEY = "django-insecure-j1j4j(ezy=!o^frs6wbvcfiur&s-#+*fe$8wozn4#9v+^x9l5o
 DEBUG = True
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost",
-    "http://127.0.0.1",
-    "http://0.0.0.0",
-    "http://localhost:3000",
-    "http://localhost:80",
+    'http://localhost',
+    'http://127.0.0.1',
+    'http://0.0.0.0',
+    'http://localhost:3000',
+    'http://zorpia.online'
+    'http://localhost:80',
+    'https://zorpia.online'
 ]
 
 CORS_ALLOW_CREDENTIALS = True
@@ -55,7 +57,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "verification",
-    "corsheaders",
+    "corsheaders",    
     "rest_framework_simplejwt.token_blacklist",
     "rest_framework_simplejwt",
     "rest_framework",

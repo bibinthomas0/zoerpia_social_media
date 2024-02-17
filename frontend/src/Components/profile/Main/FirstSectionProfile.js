@@ -7,6 +7,9 @@ import { VStack,Flex } from "@chakra-ui/react";
 import { FcHome,FcSettings,FcBusinessman,FcGallery,FcHeadset   } from "react-icons/fc";
 import { useNotification } from "../../../Context/WebSocketService";
 import { MdOutlineChat } from "react-icons/md";
+import { FcAlarmClock } from "react-icons/fc";
+
+
 
 const FirstSectionProfile = () => {
 
@@ -36,6 +39,7 @@ console.log("Total length of all arrays:", totalLength);
 <Flex
       mt={'15px'}
       align={{ base: 'stretch', md: 'center' }}
+      mb={'390px'}
 
     >
       <VStack  align="stretch">
@@ -43,8 +47,7 @@ console.log("Total length of all arrays:", totalLength);
         <Homesidebar title="Home" icon={FcHome} navigation={'/'} />
         <Homesidebar title="Profile" icon={FcBusinessman }  select={true} navigation={'/profile'} />
         <Homesidebar title={`Messages (${count})`} icon={MdOutlineChat }  navigation={'/chatlist'} />
-        <Homesidebar title="Photos" icon={FcGallery } />
-     
+        <Homesidebar title={`Notifications (0)`} icon={FcAlarmClock } navigation={'/notification'}/>
         <Homesidebar title="Settings" icon={FcSettings}  navigation={'/settings'} />
         {/* <Homesidebar title="Customer support" icon={FcHeadset } /> */}
       </VStack>

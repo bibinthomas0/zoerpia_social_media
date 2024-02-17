@@ -1,0 +1,107 @@
+version: '3.7'
+
+services:
+  db:
+    image: postgres:latest
+    environment:
+      - POSTGRES_USER=bibin
+      - POSTGRES_PASSWORD=bibin
+      - POSTGRES_DB=zorpia_auth
+    ports:
+      - "5432:5432"
+  dbchat:
+    image: postgres:latest
+    environment:
+      - POSTGRES_USER=bibin
+      - POSTGRES_PASSWORD=bibin
+      - POSTGRES_DB=zorpia_chat
+    ports:
+      - "5433:5432"
+
+  redis:
+    image: "redis:alpine"
+    ports:
+      - "6379:6379"
+
+
+  authentication:
+    volumes:
+      - static_authentication:/static
+    env_file:
+      - .env
+    build:
+      context: ./backend/authentication
+      dockerfile: docker/django/Dockerfile
+    ports:
+      - "8000:8000"
+    # depends_on:
+    #   - frontend
+
+
+  daphne:
+      build:
+        context: ./backend/chatapp
+      image: "chatapp:latest"
+      command: bash -c "daphne -b 0.0.0.0 -p 8002 chatapp.asgi:application"
+      ports:
+        - "8002:8002"
+      depends_on:
+        - redis
+        - chatapp
+
+
+  chatapp:
+    volumes:
+      - static_chatapp:/static
+    env_file:
+      - .env
+    build:
+      context: ./backend/chatapp
+    command: 'python -u consumer.py'
+    depends_on:
+      - redis
+      - dbchat
+
+  userside:
+    volumes:
+      - static_userside:/static
+    env_file:
+      - .env
+    build:
+      context: ./backend/userside
+    ports:
+      - "8001:8001"
+
+  # frontend:
+  #   build:
+  #     context: ./frontend
+  #   volumes:
+  #     - frontend:/app/build
+  #   environment:
+  #     - watchpack_polling=true
+
+  celery:
+    build: 
+      context: ./backend/authentication
+      dockerfile: docker/celery/Dockerfile
+    depends_on:
+      - redis
+
+  # nginx:
+  #   build:
+  #     context: ./nginx
+  #   volumes:
+  #     - static_userside:/static_userside
+  #     - static_authentication:/static_authentication
+  #     - static_chatapp:/static_chatapp
+  #     - frontend:/var/www/frontend
+  #   ports:
+  #     - "80:80"
+  #   depends_on:
+  #     - frontend
+
+volumes:
+  static_userside:
+  static_authentication:
+  static_chatapp:
+  # frontend:

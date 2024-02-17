@@ -11,6 +11,7 @@ from api.consumers import ChatConsumer,NotificationConsumer
 
 
 
+
 application = ProtocolTypeRouter({
     'http': django_asgi,
     'websocket': AuthMiddlewareStack(
